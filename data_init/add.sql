@@ -108,7 +108,7 @@ select * from app01_studentshop where order_time='2019-10-8';
 select shop_name from app01_shop where shop_name like '%揽胜所有%';
 
 
-# delete from app01_studentshop where order_time='2019-10-8';
+delete from app01_studentshop where order_time='2019-10-8';
 
 select id from app01_student order by id desc ;
 

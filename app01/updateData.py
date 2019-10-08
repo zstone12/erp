@@ -23,6 +23,7 @@ def data_add(file_path):
 
 
 
+
 def get_now_date():
     now = datetime.datetime.now()
     string = '{}-{}-{}'.format(now.year,now.month,now.day)
