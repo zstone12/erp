@@ -44,7 +44,7 @@ class AddData2SQL(object):
     def _insert_shop(self,shop_name):
         '''
         insert shop name and shop id plus 1
-        :param shop_name:
+        :param shop_name:str
         :return:
         '''
         self.shop_id += 1
@@ -53,6 +53,7 @@ class AddData2SQL(object):
             flag = 1
         else:
             flag = 0
+        shop_name = shop_name.strip()
         sql = '''
         insert into app01_shop values ({},'{}',{});
         '''.format(self.shop_id,shop_name,flag)
@@ -69,6 +70,7 @@ class AddData2SQL(object):
         select id from app01_school where school_name = '{}'
         '''.format(school)
         count = self.cursor.execute(sql)
+        school = school.strip()
         if count == 0:
             self.school_id += 1
             sql = '''
@@ -90,6 +92,9 @@ class AddData2SQL(object):
         :param school: str student school name
         :return: student id in db
         '''
+        name = name.strip()
+        tb_username = tb_username.strip()
+        school = school.strip()
         school_id = self._insert_school(school)
         sql = '''
         select id from app01_student 
@@ -121,6 +126,12 @@ class AddData2SQL(object):
         :param money: int used money
         :return:
         '''
+        name = name.strip()
+        tb_username = tb_username.strip()
+        school = school.strip()
+        used_time = used_time.strip()
+        order_num = order_num.strip()
+        money = int(money)
         stu_id = self._insert_stu_info(name, tb_username, school)
         self.ss_id += 1
         sql = '''
@@ -147,16 +158,16 @@ class AddData2SQL(object):
                 continue
             try:
                 self._insert_shop(df_name)
-            except:
-                print(df_name,'shop insert error')
+            except Exception as e:
+                print(e)
             shop_list = df_dict[df_name].dropna().values.tolist()
             for stu_values in shop_list:
                 try:
                     self._insert_stu_school(stu_values[2],stu_values[3],stu_values[1],stu_values[0],
                                         stu_values[5],stu_values[4])
-                except:
-                    print(stu_values,df_name,'error')
-
+                except Exception as e:
+                    # print(stu_values,df_name,'error')
+                    pass
 
 
     def _test(self):
