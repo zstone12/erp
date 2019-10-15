@@ -2,8 +2,188 @@
 {% block title %}主页{% endblock %}
 {% block content %}
     {% if request.session.is_login %}
-    <h1>你好,{{ request.session.user_name }}！欢迎回来！</h1>
+        <ul class="nav nav-pills " id="nav">
+            <li role="presentation" class="act active"><a href="#">查询学生刷单情况</a></li>
+            <li role="presentation"><a href="#">更新数据</a></li>
+            <li role="presentation"><a href="#">合并店铺</a></li>
+            <li role="presentation"><a href="#">备用功能页</a></li>
+        </ul>
+        <div id="container" >
+            <section class="tab">
+                <div>
+                    <form id="login_value" class="orm-inline" style="width:100%;text-align:center">
+                        <div>
+                            <div class="form-group">
+                                <label for="username">姓名：</label>
+                                <input id="username" type="text" name="username" placeholder="请输入学生姓名">
+                            </div>
+                            <input type="button" value="搜索学生刷单情况" onclick="search()" class="btn btn-success">
+                            <input type="button" value="搜索学生未刷过店铺" onclick="search_two()" class="btn btn-primary">
+
+                        </div>
+                    </form>
+                    <div id="tb_div">
+
+                    </div>
+
+                </div>
+            </section>
+            <section class="tab">
+                <div style="width:100%;text-align:center">
+                    <form enctype="multipart/form-data" method="post">
+                        <div class="form-group">
+                            <label for="myfile" class="col-md-5"></label>
+                            <input type="file" id="myfile"style="text-align:center;vertical-align:middle;"/>
+                        </div>
+                        <br/>
+                        <input type="button" value="上传并更新数据" onclick="upload()" class="btn btn-primary">
+                    </form>
+                </div>
+            </section>
+            <section class="tab">正在进行开发.....</section>
+            <section class="tab">正在进行开发...</section>
+        </div>
+
+        <script>
+            window.onload = function () {
+                var nav = document.getElementById('nav');
+                var oNav = nav.getElementsByTagName('li');
+
+                var container = document.getElementById('container');
+                var oDiv = container.getElementsByClassName('tab');
+                //为啥在for里面
+                for (var i = 0; i < oNav.length; i++) {
+                    oNav[i].index = i;
+                    oNav[i].onclick = function () {
+                        for (var i = 0; i < oNav.length; i++) {
+                            oNav[i].className = '';
+                            oDiv[i].style.display = "none";
+                        }
+                        //先全部设置为空，然后那一个设置为act
+                        this.className = 'act active';
+                        oDiv[this.index].style.display = "block" //显示
+                    }
+                    for (var m = 1; m < oNav.length; m++) {
+                        oNav[m].className = '';
+                        oDiv[m].style.display = "none"; //不会被显示
+                    }
+                }
+            };
+        </script>
+
+        <script src="../../static/JS/jquery.js"></script>
+        <script src="../../static/JS/jquery.form.js"></script>
+
+        {#搜索已刷单情况#}
+        <script>
+            function search() {  //获取到按钮的点击事件
+                $.ajax({
+                    url: "/ajaxsearch/", //请求地址
+                    type: "POST",       //请求类型
+                    data: $('#login_value').serialize(),
+
+
+                    success: function (data) {
+
+                        var data1 = JSON.parse(data);
+
+                        //console.log(data1);
+                        //alert($('#login_value').serialize());
+                        var s = '<table class="table table-bordered"> <thead align="center"> <tr>' +
+                            '<th>学生姓名</th> <th>淘宝用户名</th> <th>学校</th> <th>店铺名</th>' +
+                            '<th>最后刷单时间</th> </tr>' + '</thead> <tbody>';
+                        $.each(data1, function (index, obj) {
+                            s += '<tr>' + '<th>' + obj.name + '</th>' + '<th>' + obj.tb_username + '</th>' +
+                                '<th>' + obj.school_name + '</th>' +
+                                '<th>' + obj.shop_name + '</th>' +
+                                '<th>' + obj.last_time + '</th>' + '<tr>'
+
+                        })
+                        s += '</tbody>\n' +
+                            '</table>';
+
+                        console.log(s);
+                        $('#tb_div').empty();
+                        $('#tb_div').append(s);
+
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        //alert("查询错误");
+                        alert(errorThrown,XMLHttpRequest);
+                    }
+                })
+            }
+        </script>
+        {#搜索未刷单情况#}
+        <script>
+            function search_two() {  //获取到按钮的点击事件
+                $.ajax({
+                    url: "/ajaxsearchtwo/", //请求地址
+                    type: "POST",       //请求类型
+                    data: $('#login_value').serialize(),
+
+                    success: function (data) {
+                        var data1 = JSON.parse(data);
+                        //alert(data);
+                        console.log(data1);
+                        //alert($('#login_value').serialize());
+                        var s = '<table class="table table-bordered"> <thead align="center"> <tr>' +
+                            '<th>学生姓名</th> <th>未刷过店铺名</th> <th>淘宝用户名</th> <th>学校</th>' +
+                            '</tr>' + '</thead> <tbody>';
+                        $.each(data1, function (index, obj) {
+                            s += '<tr>' + '<th>' + obj.total_name + '</th>' + '<th>' + obj.shop_name + '</th>' +
+                                '<th>' + obj.tb_username + '</th>' +
+                                '<th>' + obj.school_name + '</th>' + '<tr>'
+
+                        })
+                        s += '</tbody>\n' +
+                            '</table>';
+
+                        //console.log(s);
+                        $('#tb_div').empty();
+                        $('#tb_div').append(s);
+
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("查询错误");
+                    }
+                })
+            }
+        </script>
+
+        <script>
+            function upload() {
+                var formData = new FormData();
+                formData.append("file", document.getElementById('myfile').files[0]);
+                $.ajax({
+
+                    url: '/uploadFile/',
+                    type: 'POST',
+                    data: formData, // 上传formdata封装的数据包
+                    dataType: 'JSON',
+                    cache: false, // 不缓存
+                    processData: false, // jQuery不要去处理发送的数据
+                    contentType: false, // jQuery不要去设置Content-Type请求头
+
+                    success: function (data) { // 成功回调
+
+                        alert("上传成功具体执行结果查看日志");
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+
+                })
+            }
+        </script>
     {% else %}
-    <h1>你尚未登录，只能访问公开内容！</h1>
+        < h1 > 你尚未登录，只能访问公开内容！</h1>
     {% endif %}
 {% endblock %}
+
+
+
+

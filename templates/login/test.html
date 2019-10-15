@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="login_value">
+    <div>
+        <label>姓名：</label>
+        <input id="username" type="text" name="username" placeholder="请输入学生姓名">
+        <input type="button" value="搜索" onclick="login()">
+    </div>
+    <div id="div2">
+    </div>
+</form>
+<script src="../../static/JS/jquery.js"></script>
+<script>
+    function login() {  //获取到按钮的点击事件
+        $.ajax({
+            url: "/ajaxtest/", //请求地址
+            type: "POST",       //请求类型
+            data: $('#login_value').serialize(),
+
+            success: function (data) {
+                $("#div2").empty();
+                $('#div2').append('<p>asdsad<p>');
+
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                alert("shit");
+            }
+        })
+    }
+</script>
+</body>
+</html>
