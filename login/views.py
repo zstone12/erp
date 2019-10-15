@@ -175,3 +175,8 @@ def upload(request):
         except:
             res={'wrong':'wrong'}
             return HttpResponse(json.dumps(res))
+
+def shop_search(requests):
+    res ={'msg':'ok'}
+    #    res = get_dict_data_sql(cursor, sql2) 将sql语句执行结果转化为字典
+    return HttpResponse(json.dumps(res, ensure_ascii=False))

@@ -8,7 +8,7 @@
             <li role="presentation"><a href="#">合并店铺</a></li>
             <li role="presentation"><a href="#">备用功能页</a></li>
         </ul>
-        <div id="container" >
+        <div id="container">
             <section class="tab">
                 <div>
                     <form id="login_value" class="orm-inline" style="width:100%;text-align:center">
@@ -33,14 +33,26 @@
                     <form enctype="multipart/form-data" method="post">
                         <div class="form-group">
                             <label for="myfile" class="col-md-5"></label>
-                            <input type="file" id="myfile"style="text-align:center;vertical-align:middle;"/>
+                            <input type="file" id="myfile" style="text-align:center;vertical-align:middle;"/>
                         </div>
                         <br/>
                         <input type="button" value="上传并更新数据" onclick="upload()" class="btn btn-primary">
                     </form>
                 </div>
             </section>
-            <section class="tab">正在进行开发.....</section>
+            <section class="tab">
+                <div>
+                    <form id="shop_search" class="orm-inline" style="width:100%;text-align:center">
+                        <div>
+                            <div class="form-group">
+                                <label for="username">店铺名：</label>
+                                <input id="username" type="text" name="username" placeholder="请输入店铺名">
+                            </div>
+                            <input type="button" value="搜索店铺" onclick="shop_search()" class="btn btn-primary">
+                        </div>
+                    </form>
+                </div>
+            </section>
             <section class="tab">正在进行开发...</section>
         </div>
 
@@ -74,6 +86,22 @@
         <script src="../../static/JS/jquery.js"></script>
         <script src="../../static/JS/jquery.form.js"></script>
 
+        <script>
+            function shop_search() {  //获取到按钮的点击事件
+                $.ajax({
+                    url: "/shop_search/", //请求地址
+                    type: "POST",   //请求类型
+                    data: $('#shop_search').serialize(),
+
+                    success: function (data) {
+                        alert(data);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("查询错误");
+                    }
+                })
+            }
+        </script>
         {#搜索已刷单情况#}
         <script>
             function search() {  //获取到按钮的点击事件
@@ -110,7 +138,7 @@
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
                         //alert("查询错误");
-                        alert(errorThrown,XMLHttpRequest);
+                        alert(errorThrown, XMLHttpRequest);
                     }
                 })
             }

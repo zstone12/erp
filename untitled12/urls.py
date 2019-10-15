@@ -29,5 +29,6 @@ urlpatterns = [
     url(r'^captcha', include('captcha.urls')),
     url(r'^ajaxsearch/',views.ajaxsearch),
     url(r'^ajaxsearchtwo/',views.ajaxsearchtwo),
-    url(r'^uploadFile/',views.upload)
+    url(r'^uploadFile/',views.upload),
+    url(r'^shop_search',views.shop_search),
 ]
