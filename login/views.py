@@ -125,59 +125,41 @@ def test(request):
 def ajaxsearchtwo(request):
     con, cursor = get_sql_conn()
     user_name = request.POST.get("username").strip()
-
     res = {'das': 'asdas', 'adsads': 'asdasd'}
-    sql2 = '''
-        select any_value(total.name) as total_name,any_value(total.shop_name) as shop_name,any_value(total.tb_username) as tb_username,any_value(total.school_name) as school_name from (
-select
-       app01_student.name,
-       app01_shop.shop_name,
-       app01_student.tb_username,
-       school.school_name
-from app01_shop,app01_student
-    join app01_school school on app01_student.school_id = school.id
-where app01_student.name='{}' and app01_shop.cooperate_state=1
-union
-select distinct stu.name,shop.shop_name,tb_username,school_name
-from app01_studentshop ss
-join app01_shop shop on ss.shop_id = shop.id
-join app01_student stu on ss.student_id = stu.id
-join app01_school school on stu.school_id = school.id
-where stu.name = '{}') total
-group by total.tb_username,total.shop_name,total.school_name,total.tb_username having count(*) <2;'''.format(user_name,
-                                                                                                             user_name)
-    res = get_dict_data_sql(cursor, sql2)  # list
+    # res = get_dict_data_sql(cursor, sql2)  # list
     tb_names = set()
-    for i in res:
-        tb_names.add(i['tb_username'])
-    tb_names = list(tb_names)
-    tmp = []
+    # for i in res:
+    #     tb_names.add(i['tb_username'])
+    # tb_names = list(tb_names)
+    # tmp = []
 
     #已刷
     used_sql = "select max(ss.order_time) as last_time ,stu.name,stu.tb_username,shop_name,school_name from app01_studentshop ss join app01_shop shop on ss.shop_id = shop.id join app01_student stu on ss.student_id = stu.id join app01_school sch on stu.school_id = sch.id where stu.name = '{}' and shop.cooperate_state = 1 group by ss.student_id, ss.shop_id order by  stu.tb_username;".format(
         user_name)
-    used_res = get_dict_data_sql(cursor, used_sql)
-
-
-
-
+    total_shop_sql = '''
+    SELECT shop_name
+    FROM app01_shop
+    WHERE cooperate_state = 1
+    '''
+    cursor.execute(total_shop_sql)
+    total_shop = list(cursor.fetchall())
+    cursor.execute(used_sql)
+    used_info = list(cursor.fetchall())
+    used_shop = []
     tb_shop_name=[]
 
-    for tb_name in tb_names:
-        tmp = []
-        used_tmp =[]
-        for j in res:
-            if j['tb_username']==tb_name:
-                tmp.append(j['shop_name'])
-
-        for k in used_res:
-            if k['tb_username']==tb_name:
-                used_tmp.append(k['shop_name'])
-
-        tb_shop_name.append({'name':j['total_name'],'shop_unused':tmp,
-                             'school_name':j['school_name'],'tb_username':j['tb_username'],'shop_use':used_tmp})
-
-    print(tb_shop_name)
+    for index, info in enumerate(used_info):
+        if index == 0:
+            used_shop.append(used_info[index][3])
+            continue
+        else:
+            if used_info[index][2] != used_info[index - 1][2]:
+                tb_shop_name.append({'name': used_info[index-1][1], 'shop_unused':list( set(total_shop) ^ set(used_shop)),
+                                     'school_name': used_info[index-1][-1], 'tb_username': used_info[index-1][-2],
+                                     'shop_use': used_shop})
+                used_shop = []
+            else:
+                used_shop.append(used_shop[index][-2])
 
 
     return HttpResponse(json.dumps(res, ensure_ascii=False))  # jq那边在 用js的反序列方法转换即可
