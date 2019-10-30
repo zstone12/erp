@@ -142,26 +142,28 @@ def ajaxsearchtwo(request):
     WHERE cooperate_state = 1
     '''
     cursor.execute(total_shop_sql)
-    total_shop = list(cursor.fetchall())
+    total_shop = list(map(lambda x : x[0] ,list(cursor.fetchall())))
     cursor.execute(used_sql)
     used_info = list(cursor.fetchall())
     used_shop = []
     tb_shop_name=[]
-
+    shop = deepcopy(total_shop)
     for index, info in enumerate(used_info):
         if index == 0:
             used_shop.append(used_info[index][3])
+            shop.remove(used_info[index][3])
             continue
         else:
-            if used_info[index][2] != used_info[index - 1][2]:
-                tb_shop_name.append({'name': used_info[index-1][1], 'shop_unused':list( set(total_shop) ^ set(used_shop)),
-                                     'school_name': used_info[index-1][-1], 'tb_username': used_info[index-1][-2],
+            if used_info[index][2] != used_info[index - 1][2] or index == len(used_info)-1:
+                tb_shop_name.append({'name': used_info[index-1][1], 'shop_unused':shop,
+                                     'school_name': used_info[index-1][-1], 'tb_username': used_info[index-1][3],
                                      'shop_use': deepcopy(used_shop)})
                 used_shop = []
+                shop = deepcopy(total_shop)
             else:
-                used_shop.append(used_shop[index][-2])
-
-
+                used_shop.append(used_info[index][-2])
+                shop.remove(used_info[index][3])
+    print(tb_shop_name)
     return HttpResponse(json.dumps(res, ensure_ascii=False))  # jq那边在 用js的反序列方法转换即可
 
 

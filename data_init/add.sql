@@ -176,7 +176,13 @@ join app01_school school on stu.school_id = school.id
 where stu.name = '倪诗思') total
 group by total.tb_username,total.shop_name,total.school_name,total.tb_username having count(*) <2;
 
-select test.* from (select app01_shop.* from app01_shop) test
 
+update app01_shop set cooperate_state = 0 where id > 40;
 
->>>>>>> 151e075d5a716caa7d5e73ff265ea9838cd16245
+show tables ;
+
+select distinct tb_username,name,a01s.school_name,(select count(distinct shop_id)) as count_ from app01_studentshop ss
+            join app01_student stu on ss.student_id = stu.id
+            join app01_shop shop on ss.shop_id = shop.id
+            join app01_school a01s on stu.school_id = a01s.id
+            where shop.shop_name != 'abc' and school_id in (1,2,3) group by tb_username, name, school_name having count_ > 1 order by count_ asc limit 500;
