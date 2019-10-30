@@ -13,7 +13,7 @@ from app01 import models
 import json
 import datetime
 import hashlib
-
+from copy import deepcopy
 
 def hash_code(s, salt='mysite'):  # 加点盐
     h = hashlib.sha256()
@@ -156,7 +156,7 @@ def ajaxsearchtwo(request):
             if used_info[index][2] != used_info[index - 1][2]:
                 tb_shop_name.append({'name': used_info[index-1][1], 'shop_unused':list( set(total_shop) ^ set(used_shop)),
                                      'school_name': used_info[index-1][-1], 'tb_username': used_info[index-1][-2],
-                                     'shop_use': used_shop})
+                                     'shop_use': deepcopy(used_shop)})
                 used_shop = []
             else:
                 used_shop.append(used_shop[index][-2])
