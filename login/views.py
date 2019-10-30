@@ -1,11 +1,17 @@
 # login/views.py
+import os
 
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import User
 from .forms import UserForm
 from .forms import RegisterForm
+from .search import get_sql_conn, get_dict_data_sql
+from .UpdateData import data_add
+from app01 import models
 
-
+import json
+import datetime
 import hashlib
 
 
@@ -17,8 +23,8 @@ def hash_code(s, salt='mysite'):  # 加点盐
 
 
 def index(request):
-    pass
-    return render(request, 'login/index.html')
+    shop_list = models.Shop.objects.all()
+    return render(request, 'login/index.html', locals())
 
 
 def login(request):
@@ -47,9 +53,6 @@ def login(request):
     login_form = UserForm()
     return render(request, 'login/login.html', locals())
 
-    login_form = UserForm()
-    return render(request, 'login/login.html', locals())
-
 
 def register(request):
     if request.session.get('is_login', None):
@@ -62,8 +65,7 @@ def register(request):
             username = register_form.cleaned_data['username']
             password1 = register_form.cleaned_data['password1']
             password2 = register_form.cleaned_data['password2']
-            email = register_form.cleaned_data['email']
-            sex = register_form.cleaned_data['sex']
+
             if password1 != password2:  # 判断两次密码是否相同
                 message = "两次输入的密码不同！"
                 return render(request, 'login/register.html', locals())
@@ -72,18 +74,12 @@ def register(request):
                 if same_name_user:  # 用户名唯一
                     message = '用户已经存在，请重新选择用户名！'
                     return render(request, 'login/register.html', locals())
-                same_email_user = User.objects.filter(email=email)
-                if same_email_user:  # 邮箱地址唯一
-                    message = '该邮箱地址已被注册，请使用别的邮箱！'
-                    return render(request, 'login/register.html', locals())
 
                 # 当一切都OK的情况下，创建新用户
 
                 new_user = User.objects.create()
                 new_user.name = username
                 new_user.password = hash_code(password1)
-                new_user.email = email
-                new_user.sex = sex
                 new_user.save()
                 return redirect('/login/')  # 自动跳转到登录页面
     register_form = RegisterForm()
@@ -100,3 +96,122 @@ def logout(request):
     # del request.session['user_id']
     # del request.session['user_name']
     return redirect("/index/")
+
+
+def ajaxsearch(request):
+    class DateEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, datetime.datetime):
+                return obj.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                return json.JSONEncoder.default(self, obj)
+
+    user_name = request.POST.get("username").strip()
+
+    print(user_name)
+    con, cursor = get_sql_conn()
+    sql = "select max(ss.order_time) as last_time ,stu.name,stu.tb_username,shop_name,school_name from app01_studentshop ss join app01_shop shop on ss.shop_id = shop.id join app01_student stu on ss.student_id = stu.id join app01_school sch on stu.school_id = sch.id where stu.name = '{}' and shop.cooperate_state = 1 group by ss.student_id, ss.shop_id order by  stu.tb_username;".format(
+        user_name)
+
+
+    res = get_dict_data_sql(cursor, sql)
+    return HttpResponse(json.dumps(res, cls=DateEncoder, ensure_ascii=False))  # jq那边在 用js的反序列方法转换即可
+
+
+def test(request):
+    return render(request, "login/test.html")
+
+
+def ajaxsearchtwo(request):
+    con, cursor = get_sql_conn()
+    user_name = request.POST.get("username").strip()
+
+    res = {'das': 'asdas', 'adsads': 'asdasd'}
+    sql2 = '''
+        select any_value(total.name) as total_name,any_value(total.shop_name) as shop_name,any_value(total.tb_username) as tb_username,any_value(total.school_name) as school_name from (
+select
+       app01_student.name,
+       app01_shop.shop_name,
+       app01_student.tb_username,
+       school.school_name
+from app01_shop,app01_student
+    join app01_school school on app01_student.school_id = school.id
+where app01_student.name='{}' and app01_shop.cooperate_state=1
+union
+select distinct stu.name,shop.shop_name,tb_username,school_name
+from app01_studentshop ss
+join app01_shop shop on ss.shop_id = shop.id
+join app01_student stu on ss.student_id = stu.id
+join app01_school school on stu.school_id = school.id
+where stu.name = '{}') total
+group by total.tb_username,total.shop_name,total.school_name,total.tb_username having count(*) <2;'''.format(user_name,
+                                                                                                             user_name)
+    res = get_dict_data_sql(cursor, sql2)  # list
+    tb_names = set()
+    for i in res:
+        tb_names.add(i['tb_username'])
+    tb_names = list(tb_names)
+    tmp = []
+
+    #已刷
+    used_sql = "select max(ss.order_time) as last_time ,stu.name,stu.tb_username,shop_name,school_name from app01_studentshop ss join app01_shop shop on ss.shop_id = shop.id join app01_student stu on ss.student_id = stu.id join app01_school sch on stu.school_id = sch.id where stu.name = '{}' and shop.cooperate_state = 1 group by ss.student_id, ss.shop_id order by  stu.tb_username;".format(
+        user_name)
+    used_res = get_dict_data_sql(cursor, used_sql)
+
+
+
+
+    tb_shop_name=[]
+
+    for tb_name in tb_names:
+        tmp = []
+        used_tmp =[]
+        for j in res:
+            if j['tb_username']==tb_name:
+                tmp.append(j['shop_name'])
+
+        for k in used_res:
+            if k['tb_username']==tb_name:
+                used_tmp.append(k['shop_name'])
+
+        tb_shop_name.append({'name':j['total_name'],'shop_unused':tmp,
+                             'school_name':j['school_name'],'tb_username':j['tb_username'],'shop_use':used_tmp})
+
+    print(tb_shop_name)
+
+
+    return HttpResponse(json.dumps(res, ensure_ascii=False))  # jq那边在 用js的反序列方法转换即可
+
+
+def upload(request):
+    if request.method == "POST":  # 请求方法为POST时，进行处理
+        myFile = request.FILES.get("file", None)  # 获取上传的文件，如果没有文件，则默认为None
+        if not os.path.exists('./data'):
+            os.makedirs('./data')
+
+        path = os.path.join("./data", myFile.name)
+        destination = open(path, 'wb+')  # 打开特定的文件进行二进制的写操作
+        for chunk in myFile.chunks():  # 分块写入文件
+            destination.write(chunk)
+        destination.close()
+        res = {'das': 'asdas', 'adsads': 'asdasd'}
+        try:
+            data_add(path)
+            return HttpResponse(json.dumps(res))
+        except:
+            res = {'wrong': 'wrong'}
+            return HttpResponse(json.dumps(res))
+
+
+def shop_search(requests):
+    res = {'msg': 'ok'}
+    #    res = get_dict_data_sql(cursor, sql2) 将sql语句执行结果转化为字典
+    return HttpResponse(json.dumps(res, ensure_ascii=False))
+
+
+def shop_merge(requests):
+    annex_shop_id = requests.POST.get("annex_shop")
+    main_shop_id = requests.POST.get("main_shop")
+    print(annex_shop_id, main_shop_id)
+    res = {'msg': 'ok'}
+    return HttpResponse(json.dumps(res, ensure_ascii=False))

@@ -24,7 +24,7 @@ SECRET_KEY = '_&www1)cep1$z7wi3ie6s66g15g7#)l6@mh)6p%88h&xku-4h1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['123.56.162.193','127.0.0.1']
 
 
 # Application definition
@@ -45,7 +45,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -89,8 +89,9 @@ DATABASES = {
         'NAME': 'erpDB',
         'USER':'root',
         'PASSWORD':'erp2019/10/02',
-        'HOST':'123.56.162.193',
+        'HOST':'129.204.185.247',
         'PORT':'3306',
+        "init_command": "SET foreign_key_checks = 0;",
     }
 }
 

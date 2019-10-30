@@ -2,11 +2,14 @@ from django.db import models
 from django.utils import timezone
 
 
-class User(models.Model):
-    username = models.CharField(max_length=50)
-    password = models.CharField(max_length=50)
-    admin_right = models.BooleanField(default=False)
+class School(models.Model):
+    school_name = models.CharField(max_length=50)
+    def __str__(self):
+        return self.school_name
+    class Meta:
 
+        verbose_name = '学校'
+        verbose_name_plural = '学校'
 
 class Student(models.Model):
     tb_username = models.CharField(max_length=50)
@@ -15,9 +18,7 @@ class Student(models.Model):
     state = models.BooleanField(default=False)
 
 
-class School(models.Model):
-    school_name = models.CharField(max_length=50)
-    user = models.ManyToManyField(User,blank=True)
+
 
 
 class Shop(models.Model):
