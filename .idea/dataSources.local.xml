@@ -10,7 +10,7 @@
       <introspection-schemas>*:@</introspection-schemas>
     </data-source>
     <data-source name="erpDB@123.56.162.193" uuid="f4c91644-ae24-4b8c-8155-26a001eb19e8">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" exact-version="0" />
     </data-source>
   </component>
 </project>

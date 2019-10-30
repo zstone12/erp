@@ -41,17 +41,37 @@
                 </div>
             </section>
             <section class="tab">
-                <div>
-                    <form id="shop_search" class="orm-inline" style="width:100%;text-align:center">
-                        <div>
-                            <div class="form-group">
-                                <label for="username">店铺名：</label>
-                                <input id="username" type="text" name="username" placeholder="请输入店铺名">
-                            </div>
-                            <input type="button" value="搜索店铺" onclick="shop_search()" class="btn btn-primary">
-                        </div>
+                <div style="text-align:center"><input type="button" value="进行合并" onclick="merge() " class="btn btn-primary"></div>
+
+                <table class="table table-bordered">
+                    <thead align="center">
+                    <tr>
+                        <th>选择主店铺</th>
+                        <th>选择副店铺(将要被合并的店铺)</th>
+                        <th>店铺名称</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <form id="shop_merge" class="orm-inline">
+                        {% for shop in shop_list %}
+                            <tr>
+                                <th>
+                                    <input name="annex_shop" type="radio" value="{{ shop.id }}"/>
+                                </th>
+                                <th>
+                                    <input name="main_shop" type="radio" value="{{ shop.id }}"/>
+                                </th>
+
+                                <th>{{ shop.shop_name }}</th>
+                                <th style="display:none">{{ shop.id }}</th>
+                                {#display:block or none#}
+                            </tr>
+                        {% endfor %}
                     </form>
-                </div>
+
+                    {#                    {% for shop in  %}#}
+                    </tbody>
             </section>
             <section class="tab">正在进行开发...</section>
         </div>
@@ -86,7 +106,7 @@
         <script src="../../static/JS/jquery.js"></script>
         <script src="../../static/JS/jquery.form.js"></script>
 
-        <script>
+        {% comment %}<script>
             function shop_search() {  //获取到按钮的点击事件
                 $.ajax({
                     url: "/shop_search/", //请求地址
@@ -101,7 +121,7 @@
                     }
                 })
             }
-        </script>
+        </script>{% endcomment %}
         {#搜索已刷单情况#}
         <script>
             function search() {  //获取到按钮的点击事件
@@ -207,8 +227,25 @@
                 })
             }
         </script>
+
+        <script>
+            function merge() {  //获取到按钮的点击事件
+                $.ajax({
+                    url: "/shop_merge/", //请求地址
+                    type: "POST",   //请求类型
+                    data: $('#shop_merge').serialize(),
+
+                    success: function (data) {
+                        alert(data);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("合并失败");
+                    }
+                })
+            }
+        </script>
     {% else %}
-        < h1 > 你尚未登录，只能访问公开内容！</h1>
+        <h1> 你尚未登录，只能访问公开内容！</h1>
     {% endif %}
 {% endblock %}
 

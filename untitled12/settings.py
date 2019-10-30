@@ -89,8 +89,9 @@ DATABASES = {
         'NAME': 'erpDB',
         'USER':'root',
         'PASSWORD':'erp2019/10/02',
-        'HOST':'123.56.162.193',
+        'HOST':'129.204.185.247',
         'PORT':'3306',
+        "init_command": "SET foreign_key_checks = 0;",
     }
 }
 

@@ -31,4 +31,5 @@ urlpatterns = [
     url(r'^ajaxsearchtwo/',views.ajaxsearchtwo),
     url(r'^uploadFile/',views.upload),
     url(r'^shop_search',views.shop_search),
+    url(r'^shop_merge',views.shop_merge),
 ]
