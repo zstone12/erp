@@ -32,4 +32,5 @@ urlpatterns = [
     url(r'^uploadFile/',views.upload),
     url(r'^shop_search',views.shop_search),
     url(r'^shop_merge',views.shop_merge),
+    url(r'^recommended_students',views.recommended_students),
 ]
