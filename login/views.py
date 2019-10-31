@@ -188,8 +188,15 @@ join app01_student stu on ss.student_id = stu.id
 join app01_school school on stu.school_id = school.id
 where stu.name = '{}') total
 group by total.tb_username,total.shop_name,total.school_name,total.tb_username having count(*) <2;'''.format(user_name,
-                                                                                                             user_name)
+                                                                                   user_name)
     res = get_dict_data_sql(cursor, sql2)  # list
+
+    tb_names = set()
+    # for i in res:
+    #     tb_names.add(i['tb_username'])
+    # tb_names = list(tb_names)
+    # tmp = []
+
 
     return HttpResponse(json.dumps(res, ensure_ascii=False))  # jq那边在 用js的反序列方法转换即可
 
