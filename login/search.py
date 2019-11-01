@@ -5,7 +5,7 @@ def get_sql_conn():
     """
     获取数据库连接
     """
-    conn = pymysql.connect(host="123.56.162.193", user="root", password="erp2019/10/02", db="erpDB")
+    conn = pymysql.connect(host="129.204.185.247", user="root", password="erp2019/10/02", db="erpDB")
     cursor = conn.cursor()
     return conn, cursor
 

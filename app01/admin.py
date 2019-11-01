@@ -5,5 +5,5 @@ from . import models
 
 #admin.site.register(models.Student)
 #admin.site.register(models.Shop)
-admin.site.register(models.School)
+#admin.site.register(models.School)
 

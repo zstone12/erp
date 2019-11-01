@@ -1,5 +1,15 @@
 {% extends './base.html' %}
 {% block title %}主页{% endblock %}
+{% block school %}
+    <ul class="nav navbar-nav navbar-right">
+
+        {% if request.session.is_login %}
+            {% for i in schools %}
+                <li><a href="#">{{ i.school_name }}</a></li>
+            {% endfor %}
+        {% endif %}
+    </ul>
+ {% endblock %}
 {% block content %}
     {% if request.session.is_login %}
         <ul class="nav nav-pills " id="nav">
@@ -305,13 +315,13 @@
 
         <script>
             function recommended_search() {
+                alert("已进行搜索，请稍作等待.");
                 $.ajax({
                     url: "/recommended_students/", //请求地址
                     type: "POST",   //请求类型
                     data: $('#shop_value').serialize(),
 
                     success: function (data) {
-                        //alert(data);
                          var data1 = JSON.parse(data);
                         //alert(data);
                         console.log(data1);

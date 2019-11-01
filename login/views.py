@@ -24,7 +24,14 @@ def hash_code(s, salt='mysite'):  # 加点盐
 
 
 def index(request):
+    if request.session.get('is_login', None):
+        # 登录状态
+        username = request.session['user_name']
+        schools = models.School.objects.filter(user__name=username)
+        return render(request, 'login/index.html', locals())
+
     shop_list = models.Shop.objects.all()
+
     return render(request, 'login/index.html', locals())
 
 
@@ -188,7 +195,7 @@ join app01_student stu on ss.student_id = stu.id
 join app01_school school on stu.school_id = school.id
 where stu.name = '{}') total
 group by total.tb_username,total.shop_name,total.school_name,total.tb_username having count(*) <2;'''.format(user_name,
-                                                                                   user_name)
+                                                                                                             user_name)
     res = get_dict_data_sql(cursor, sql2)  # list
 
     tb_names = set()
@@ -196,7 +203,6 @@ group by total.tb_username,total.shop_name,total.school_name,total.tb_username h
     #     tb_names.add(i['tb_username'])
     # tb_names = list(tb_names)
     # tmp = []
-
 
     return HttpResponse(json.dumps(res, ensure_ascii=False))  # jq那边在 用js的反序列方法转换即可
 
@@ -246,19 +252,19 @@ def recommended_students(requests):
     except Exception as e:
         return HttpResponse(json.dumps(res, ensure_ascii=False))
 
-    user_name =requests.session['user_name']
+    user_name = requests.session['user_name']
     schools = models.School.objects.filter(user__name=user_name)
-    str1=''
+    str1 = ''
     for i in schools:
-        str1+=str(i.id)+','
-    str1=str1[:-1]
+        str1 += str(i.id) + ','
+    str1 = str1[:-1]
     sql3 = '''
     select distinct tb_username,name,a01s.school_name,(select count(distinct shop_id)) as count_ from app01_studentshop ss
             join app01_student stu on ss.student_id = stu.id
             join app01_shop shop on ss.shop_id = shop.id
             join app01_school a01s on stu.school_id = a01s.id
             where shop.shop_name != '{}' and school_id in ({}) group by tb_username, name, school_name having count_ > 1 order by count_ asc limit 500;
-    '''.format(shop_name,str1)
+    '''.format(shop_name, str1)
     res = get_dict_data_sql(cursor, sql3)
 
     return HttpResponse(json.dumps(res, ensure_ascii=False))

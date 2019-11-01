@@ -39,11 +39,15 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="my-nav">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="/index/">主页</a></li>
+                <li class="active"><a href="#">当前用户管理学校:</a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+                {% block school %} {% endblock %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if request.session.is_login %}
                     <li><a href="#">当前在线：{{ request.session.user_name }}</a></li>
+
                     <li><a href="/logout/">登出</a></li>
                 {% else %}
                     <li><a href="/login/">登录</a></li>
