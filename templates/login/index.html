@@ -15,7 +15,7 @@
         <ul class="nav nav-pills " id="nav">
             <li role="presentation" class="act active"><a href="#">查询学生刷单情况</a></li>
             <li role="presentation"><a href="#">更新数据</a></li>
-            <li role="presentation"><a href="#">合并店铺</a></li>
+            <li role="presentation"><a href="#">所有合作店铺</a></li>
             <li role="presentation"><a href="#">根据店铺推荐学生</a></li>
         </ul>
         <div id="container">
@@ -59,14 +59,14 @@
             </section>
 
             <section class="tab">
-                <div style="text-align:center"><input type="button" value="进行合并" onclick="merge() "
-                                                      class="btn btn-primary"></div>
+{#                <div style="text-align:center"><input type="button" value="进行合并" onclick="merge() "#}
+{#                                                      class="btn btn-primary"></div>#}
 
                 <table class="table table-bordered">
                     <thead align="center">
                     <tr>
-                        <th>选择主店铺</th>
-                        <th>选择副店铺(将要被合并的店铺)</th>
+{#                        <th >选择主店铺</th>#}
+{#                        <th>选择副店铺(将要被合并的店铺)</th>#}
                         <th>店铺名称</th>
                         <th></th>
                     </tr>
@@ -75,12 +75,12 @@
                     <form id="shop_merge" class="orm-inline">
                         {% for shop in shop_list %}
                             <tr>
-                                <th>
-                                    <input name="annex_shop" type="radio" value="{{ shop.id }}"/>
-                                </th>
-                                <th>
-                                    <input name="main_shop" type="radio" value="{{ shop.id }}"/>
-                                </th>
+{#                                <th>#}
+{#                                    <input  name="annex_shop" type="radio" value="{{ shop.id }}"/>#}
+{#                                </th>#}
+{#                                <th>#}
+{#                                    <input   name="main_shop" type="radio" value="{{ shop.id }}"/>#}
+{#                                </th>#}
 
                                 <th>{{ shop.shop_name }}</th>
                                 <th style="display:none">{{ shop.id }}</th>

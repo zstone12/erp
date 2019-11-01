@@ -28,6 +28,8 @@ def index(request):
         # 登录状态
         username = request.session['user_name']
         schools = models.School.objects.filter(user__name=username)
+        shop_list = models.Shop.objects.all()
+
         return render(request, 'login/index.html', locals())
 
     shop_list = models.Shop.objects.all()
