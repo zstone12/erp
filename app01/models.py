@@ -25,7 +25,12 @@ class Shop(models.Model):
     shop_name = models.CharField(max_length=100)
     cooperate_state = models.BooleanField(default=True)
     students = models.ManyToManyField(Student, through='StudentShop')
+    def __str__(self):
+        return self.shop_name
+    class Meta:
 
+        verbose_name = '店铺'
+        verbose_name_plural = '店铺'
 
 class StudentShop(models.Model):
     shop = models.ForeignKey("Shop", on_delete=models.CASCADE, )

@@ -47,7 +47,7 @@ def login(request):
             password = login_form.cleaned_data['password']
             try:
                 user = User.objects.get(name=username)
-                if user.password == hash_code(password):
+                if user.password == password:
                     request.session['is_login'] = True
                     request.session['user_id'] = user.id
                     request.session['user_name'] = user.name
@@ -87,7 +87,7 @@ def register(request):
 
                 new_user = User.objects.create()
                 new_user.name = username
-                new_user.password = hash_code(password1)
+                new_user.password = password1
                 new_user.save()
                 return redirect('/login/')  # 自动跳转到登录页面
     register_form = RegisterForm()
