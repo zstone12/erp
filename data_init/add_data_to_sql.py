@@ -2,6 +2,7 @@ import pymysql
 import pandas as pd
 import openpyxl as pyx
 from tqdm import tqdm
+import logging
 
 TEST = 1
 
@@ -17,13 +18,14 @@ class AddData2SQL(object):
         self._destory_db()
         self._test()
 
+
     @staticmethod
     def _connect_to_sql():
         '''
         connect to database and return cursor and db to commit data
         :return:
         '''
-        db = pymysql.connect("123.56.162.193", "root", "erp2019/10/02", "erpDB")
+        db = pymysql.connect("129.204.185.247", "root", "erp2019/10/02", "erpDB")
         cursor = db.cursor()
         return cursor,db
 
@@ -143,8 +145,9 @@ class AddData2SQL(object):
         self.db.commit()
 
     def _destory_db(self):
-        self.cursor.execute('call delete_all_stu_info()')
-        self.db.commit()
+        pass
+        # self.cursor.execute('call delete_all_stu_info()')
+        # self.db.commit()
 
     def main(self):
         df_dict = pd.read_excel('./data/刷单所有.xlsx', None, encoding='gbk',
@@ -163,15 +166,18 @@ class AddData2SQL(object):
             shop_list = df_dict[df_name].dropna().values.tolist()
             for stu_values in shop_list:
                 try:
+
                     self._insert_stu_school(stu_values[2],stu_values[3],stu_values[1],stu_values[0],
                                         stu_values[5],stu_values[4])
                 except Exception as e:
                     # print(stu_values,df_name,'error')
-                    pass
+                    print('er',e)
 
 
     def _test(self):
-        self.main()
-
+        try:
+            self.main()
+        except Exception as e:
+            print(e)
 if __name__ == '__main__':
     AddData2SQL()
