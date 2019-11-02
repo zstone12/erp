@@ -25,11 +25,12 @@ def data_add(file_path):
             success.warning(str(data.values))
         except Exception as e:
             print(e)
-            success.warning(str(e))
+            fail.warning(str(e))
     db.commit()
 
 
 def logger_init(date):
+    print('../static/logger/{}'.format(date))
     if not os.path.exists('../static/logger/{}'.format(date)):
         os.mkdir('../static/logger/{}'.format(date))
     fail_logger = logging.getLogger('fail')
@@ -46,4 +47,4 @@ def get_now_date():
 
 
 if __name__ == '__main__':
-    data_add(r'C:\Users\song\PycharmProjects\erp\static\daily update data\今日全部.xlsx')
+    data_add(r'../static/daily update data/今日全部.xlsx')

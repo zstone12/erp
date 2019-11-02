@@ -1,6 +1,6 @@
 # login/views.py
 import os
-
+import time
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import User
@@ -10,7 +10,7 @@ from .search import get_sql_conn, get_dict_data_sql
 from .UpdateData import data_add
 from app01 import models
 from login.models import User
-
+import threading
 import json
 import datetime
 import hashlib
@@ -210,19 +210,39 @@ group by total.tb_username,total.shop_name,total.school_name,total.tb_username h
 
 
 def upload(request):
+    def get_md5(file_path):
+        with open(os.path.join(file_path), 'rb') as f:
+            md5obj = hashlib.md5()
+            md5obj.update(f.read())
+            hash = md5obj.hexdigest()
+        return hash
+
     if request.method == "POST":  # 请求方法为POST时，进行处理
         myFile = request.FILES.get("file", None)  # 获取上传的文件，如果没有文件，则默认为None
         if not os.path.exists('./data'):
             os.makedirs('./data')
 
-        path = os.path.join("./data", myFile.name)
+        path = os.path.join("./data", str(time.time())+myFile.name)
         destination = open(path, 'wb+')  # 打开特定的文件进行二进制的写操作
         for chunk in myFile.chunks():  # 分块写入文件
             destination.write(chunk)
         destination.close()
         res = {'das': 'asdas', 'adsads': 'asdasd'}
+        file_md5 = get_md5(path)
+        db, cursor = get_sql_conn()
+        cursor.execute('''
+        SELECT COUNT(*) FROM update_file_md5 WHERE md5 = '{}'
+        '''.format(file_md5))
+        result = list(cursor.fetchall())[0][0]
+        if result:
+            return HttpResponse(json.dumps({'wrong': 'wrong'}))
+        else:
+            cursor.execute('''
+            INSERT INTO update_file_md5 values ('{}')
+            '''.format(file_md5))
+            db.commit()
         try:
-            data_add(path)
+            threading.Thread(target=data_add,args=(path,)).start()
             return HttpResponse(json.dumps(res))
         except:
             res = {'wrong': 'wrong'}
