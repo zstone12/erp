@@ -33,4 +33,5 @@ urlpatterns = [
     url(r'^shop_search',views.shop_search),
     url(r'^shop_merge',views.shop_merge),
     url(r'^recommended_students',views.recommended_students),
+    url(r'^block_student',views.block_student),
 ]

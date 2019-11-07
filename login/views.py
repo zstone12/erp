@@ -290,3 +290,16 @@ def recommended_students(requests):
     res = get_dict_data_sql(cursor, sql3)
 
     return HttpResponse(json.dumps(res, ensure_ascii=False))
+
+
+def block_student(request):
+    ret = {'status': True}
+    try:
+        tb_username = request.POST.get('tb_username')
+        models.Student.objects.filter(tb_username=tb_username).update(state=True)
+        print("test")
+    except Exception as e:
+        ret['status'] = False
+        print("shit")
+        print(e)
+    return HttpResponse(json.dumps(ret))

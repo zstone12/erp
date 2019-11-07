@@ -9,7 +9,7 @@
             {% endfor %}
         {% endif %}
     </ul>
- {% endblock %}
+{% endblock %}
 {% block content %}
     {% if request.session.is_login %}
         <ul class="nav nav-pills " id="nav">
@@ -59,14 +59,14 @@
             </section>
 
             <section class="tab">
-{#                <div style="text-align:center"><input type="button" value="进行合并" onclick="merge() "#}
-{#                                                      class="btn btn-primary"></div>#}
+                {#                <div style="text-align:center"><input type="button" value="进行合并" onclick="merge() "#}
+                {#                                                      class="btn btn-primary"></div>#}
 
                 <table class="table table-bordered">
                     <thead align="center">
                     <tr>
-{#                        <th >选择主店铺</th>#}
-{#                        <th>选择副店铺(将要被合并的店铺)</th>#}
+                        {#                        <th >选择主店铺</th>#}
+                        {#                        <th>选择副店铺(将要被合并的店铺)</th>#}
                         <th>店铺名称</th>
                         <th></th>
                     </tr>
@@ -75,12 +75,12 @@
                     <form id="shop_merge" class="orm-inline">
                         {% for shop in shop_list %}
                             <tr>
-{#                                <th>#}
-{#                                    <input  name="annex_shop" type="radio" value="{{ shop.id }}"/>#}
-{#                                </th>#}
-{#                                <th>#}
-{#                                    <input   name="main_shop" type="radio" value="{{ shop.id }}"/>#}
-{#                                </th>#}
+                                {#                                <th>#}
+                                {#                                    <input  name="annex_shop" type="radio" value="{{ shop.id }}"/>#}
+                                {#                                </th>#}
+                                {#                                <th>#}
+                                {#                                    <input   name="main_shop" type="radio" value="{{ shop.id }}"/>#}
+                                {#                                </th>#}
 
                                 <th>{{ shop.shop_name }}</th>
                                 <th style="display:none">{{ shop.id }}</th>
@@ -102,27 +102,48 @@
                             <label for="shopname">店铺名：</label>
                             <input id="shopname" type="text" name="shopname" placeholder="请输入店铺名">
                         </div>
-                        <input type="button" value="根据店铺推荐学校" onclick="recommended_search()" class="btn btn-primary">
+                        <input type="button" value="根据店铺推荐学生" onclick="recommended_search()" class="btn btn-primary">
                     </div>
                 </form>
+                <!-- Modal -->
+                <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="alert alert-danger" role="alert">
+                            <h3>拉黑该名学生？</h3>
+                            {#                            display: none;#}
+                            <div>...<input style="display: none;" type="text" id="delNid"/></div>
+                            <div>
+                                <button type="button" class="btn btn-default">取消</button>
+                                <button id="delConfirm" type="button" class="btn btn-danger" onclick="bindDelConfirm()">
+                                    确定
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div id="tb_div3">
 
                 </div>
             </section>
         </div>
 
+
+        <script src="../../static/JS/jquery.js"></script>
+        <script src="../../static/JS/jquery.form.js"></script>
         <script>
             window.onload = function () {
+
+
                 var nav = document.getElementById('nav');
                 var oNav = nav.getElementsByTagName('li');
 
                 var container = document.getElementById('container');
                 var oDiv = container.getElementsByClassName('tab');
-                //为啥在for里面
-                for (var i = 0; i < oNav.length; i++) {
+
+                for (let i = 0; i < oNav.length; i++) {
                     oNav[i].index = i;
                     oNav[i].onclick = function () {
-                        for (var i = 0; i < oNav.length; i++) {
+                        for (let i = 0; i < oNav.length; i++) {
                             oNav[i].className = '';
                             oDiv[i].style.display = "none";
                         }
@@ -130,35 +151,57 @@
                         this.className = 'act active';
                         oDiv[this.index].style.display = "block" //显示
                     }
-                    for (var m = 1; m < oNav.length; m++) {
+                    for (let m = 1; m < oNav.length; m++) {
                         oNav[m].className = '';
                         oDiv[m].style.display = "none"; //不会被显示
                     }
                 }
-            };
+            }
+            ;
+
+
         </script>
 
-        <script src="../../static/JS/jquery.js"></script>
-        <script src="../../static/JS/jquery.form.js"></script>
 
-        {% comment %}<script>
-            function shop_search() {  //获取到按钮的点击事件
-                $.ajax({
-                    url: "/shop_search/", //请求地址
-                    type: "POST",   //请求类型
-                    data: $('#shop_search').serialize(),
+        <script>
+            function bindDelConfirm() {
+                {
+                    console.log("shit");
 
-                    success: function (data) {
-                        alert(data);
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        alert("查询错误");
-                    }
+                    var tb_username = $('#delNid').val();
+
+                    $.ajax({
+                        url: '/block_student/',
+                        type: 'POST',
+                        data: {'tb_username': tb_username},
+                        success: function (arg) {
+                            var dict = JSON.parse(arg);
+                            if (dict.status) {
+                                $('tr[name="' + tb_username + '"]').remove();
+                            }
+                            $('#delModal').modal('hide');
+                        }
+                    })
+                }
+            }
+        </script>
+
+        <script>
+            function bindDel() {
+                $.when(aj).done(function () {
+                    $(".del-row").on('click', function (e) {
+                    $('#delModal').modal('show');
+                    var tb = $(this).parent().parent().attr('name');
+                    console.log(tb);
+                    $('#delNid').val(tb);
+                    })
+
                 })
             }
-        </script>{% endcomment %}
-        {#搜索已刷单情况#}
+        </script>
         <script>
+
+
             function search() {  //获取到按钮的点击事件
                 $.ajax({
                     url: "/ajaxsearch/", //请求地址
@@ -172,31 +215,61 @@
 
                         //console.log(data1);
                         //alert($('#login_value').serialize());
-                        var s = '<table class="table table-bordered"> <thead align="center"> <tr>' +
-                            ' <th>淘宝用户名</th> <th>学校</th> <th>店铺名</th>' +
-                            '<th>最后刷单时间</th> </tr>' + '</thead> <tbody>';
+                        var s = document.createElement("table");
+                        s.setAttribute("class", "table table-bordered");
+
+                        var th = document.createElement("thead");
+
+                        var th1 = document.createElement("tr");
+                        var th2 = document.createElement("th");
+                        th2.innerHTML = "淘宝用户名";
+                        th1.append(th2);
+
+                        var th3 = document.createElement("th");
+                        th3.innerHTML = "学校";
+                        th1.append(th3);
+
+                        var th4 = document.createElement("th");
+                        th4.innerHTML = "店铺名";
+                        th1.append(th4);
+
+                        var th5 = document.createElement("th");
+                        th5.innerHTML = "最后刷单时间";
+                        th1.append(th5);
+
+                        th.append(th1);
+                        s.append(th);
+                        var tbod = document.createElement("tbody");
+
                         $.each(data1, function (index, obj) {
-                            s += '<tr>' + '<th>' + obj.tb_username + '</th>' +
-                                '<th>' + obj.school_name + '</th>' +
-                                '<th>' + obj.shop_name + '</th>' +
-                                '<th>' + obj.last_time + '</th>' + '<tr>'
+                            var tr = document.createElement('tr');
 
+                            var tb_th = document.createElement('th');
+                            tb_th.innerHTML = obj.tb_username;
+                            tr.append(tb_th);
+
+                            var sch_th = document.createElement('th');
+                            sch_th.innerHTML = obj.school_name;
+                            tr.append(sch_th);
+
+                            var shop_th = document.createElement('th');
+                            shop_th.innerHTML = obj.shop_name;
+                            tr.append(shop_th);
+
+                            var last_th = document.createElement('th');
+                            last_th.innerHTML = obj.last_time;
+                            tr.append(last_th);
+                            tbod.append(tr);
+                            s.append(tbod);
+                            //console.log(s);
+                            $('#tb_div').empty();
+                            $('#tb_div').append(s);
                         })
-                        s += '</tbody>\n' +
-                            '</table>';
-
-                        console.log(s);
-                        $('#tb_div').empty();
-                        $('#tb_div').append(s);
-
-
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        //alert("查询错误");
-                        alert(errorThrown, XMLHttpRequest);
+                        alert("查询错误");
                     }
                 })
-
                 $.ajax({
                     url: "/ajaxsearchtwo/", //请求地址
                     type: "POST",       //请求类型
@@ -205,7 +278,7 @@
                     success: function (data) {
                         var data1 = JSON.parse(data);
                         //alert(data);
-                        console.log(data1);
+                        //console.log(data1);
                         //alert($('#login_value').serialize());
                         var s = '<table class="table table-bordered"> <thead align="center"> <tr>' +
                             '<th>未刷过店铺名</th> <th>淘宝用户名</th> <th>学校</th> ' +
@@ -231,6 +304,8 @@
                 })
             }
         </script>
+
+
         {#搜索未刷单情况#}
         <script>
             function search_two() {  //获取到按钮的点击事件
@@ -242,7 +317,7 @@
                     success: function (data) {
                         var data1 = JSON.parse(data);
                         //alert(data);
-                        console.log(data1);
+                        //console.log(data1);
                         //alert($('#login_value').serialize());
                         var s = '<table class="table table-bordered"> <thead align="center"> <tr>' +
                             '<th>学生姓名</th> <th>未刷过店铺名</th> <th>淘宝用户名</th> <th>学校</th>' +
@@ -314,40 +389,94 @@
         </script>
 
         <script>
+        var aj;
             function recommended_search() {
                 alert("已进行搜索，请稍作等待.");
-                $.ajax({
+                aj = $.ajax({
                     url: "/recommended_students/", //请求地址
                     type: "POST",   //请求类型
                     data: $('#shop_value').serialize(),
 
                     success: function (data) {
-                         var data1 = JSON.parse(data);
-                        //alert(data);
-                        console.log(data1);
-                        //alert($('#login_value').serialize());
-                        var s = '<table class="table table-bordered"> <thead align="center"> <tr>' +
-                            '<th>淘宝用户名</th> <th>姓名</th> <th>学校</th> <th>已刷单数量</th>' +
-                            '</tr>' + '</thead> <tbody>';
+
+                        var data1 = JSON.parse(data);
+                        var s = document.createElement("table");
+                        s.setAttribute("class", "table table-bordered");
+
+                        var th = document.createElement("thead");
+
+                        var th1 = document.createElement("tr");
+                        var th2 = document.createElement("th");
+                        th2.innerHTML = "淘宝用户名";
+                        th1.append(th2);
+
+                        var th3 = document.createElement("th");
+                        th3.innerHTML = "姓名";
+                        th1.append(th3);
+
+                        var th4 = document.createElement("th");
+                        th4.innerHTML = "学校";
+                        th1.append(th4);
+
+                        var th5 = document.createElement("th");
+                        th5.innerHTML = "已刷单数量";
+                        th1.append(th5);
+
+                        var th6 = document.createElement("th");
+                        th6.innerHTML = "操作";
+                        th1.append(th6);
+
+                        th.append(th1);
+                        s.append(th);
+                        var tbod = document.createElement("tbody");
+
                         $.each(data1, function (index, obj) {
-                            s += '<tr>' + '<th>' + obj.tb_username + '</th>' +
-                                '<th>' + obj.name + '</th>' +
-                                '<th>' + obj.school_name + '</th>' +
-                                '<th>' + obj.count_ + '</th>'+ '</tr>'
+                            var tr = document.createElement('tr');
+                            tr.setAttribute("name", obj.tb_username);
 
+                            var tb_th = document.createElement('th');
+                            tb_th.innerHTML = obj.tb_username;
+                            tr.append(tb_th);
+
+                            var name_th = document.createElement('th');
+                            name_th.innerHTML = obj.name;
+                            tr.append(name_th);
+
+                            var sch_th = document.createElement('th');
+                            sch_th.innerHTML = obj.school_name;
+                            tr.append(sch_th);
+
+                            var count_th = document.createElement('th');
+                            count_th.innerHTML = obj.count_;
+                            tr.append(count_th);
+
+                            var op_th = document.createElement('th');
+                            var a = document.createElement("a");
+                            a.setAttribute("class", "glyphicon glyphicon-remove icon del-row");
+                            a.setAttribute("onclick", "bindDel()");
+                            op_th.append(a);
+                            tr.append(op_th);
+
+                            tbod.append(tr);
+                            tbod.setAttribute("id", "abc");
+                            s.append(tbod);
+                            //console.log(s);
+                            $('#tb_div3').empty();
+                            $('#tb_div3').append(s);
                         })
-                        s += '</tbody>\n' +
-                            '</table>';
-
-                        //console.log(s);
-                        $('#tb_div3').empty();
-                        $('#tb_div3').append(s);
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        alert("不存在该店铺");
+                        alert("查询错误");
                     }
                 })
             }
+
+        </script>
+
+        <script>
+            $("#abc").on('click', function (e) {
+                console.log(e);
+            })
         </script>
     {% else %}
         <h1> 你尚未登录，只能访问公开内容！</h1>
