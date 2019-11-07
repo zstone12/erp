@@ -11,12 +11,14 @@ class AddData2SQL(object):
     def __init__(self):
         self.school_id = 1
         self.stu_id = 1
-        self.shop_id = 1
+        self.shop_id = 200
         self.ss_id = 1
         self._visible_list = self._get_visible_list()
         self.cursor, self.db = self._connect_to_sql()
         self._destory_db()
         self._test()
+        self.used_shop_id = []
+        self.shoping_id = -1
 
 
     @staticmethod
@@ -43,13 +45,18 @@ class AddData2SQL(object):
                 visible_sheet.append(sheet_name)
         return visible_sheet
 
-    def _insert_shop(self,shop_name):
+    def _insert_shop(self,shop_name,shop_set_id = -1):
         '''
         insert shop name and shop id plus 1
         :param shop_name:str
         :return:
         '''
-        self.shop_id += 1
+        if shop_set_id == -1:
+            self.shop_id += 1
+            shop_id = self.shop_id
+        else:
+            shop_id = shop_set_id
+        self.shoping_id = shop_id
         visible_list = self._visible_list
         if shop_name in visible_list:
             flag = 1
@@ -58,7 +65,7 @@ class AddData2SQL(object):
         shop_name = shop_name.strip()
         sql = '''
         insert into app01_shop values ({},'{}',{});
-        '''.format(self.shop_id,shop_name,flag)
+        '''.format(shop_id,shop_name,flag)
         self.cursor.execute(sql)
         self.db.commit()
 
@@ -110,7 +117,6 @@ class AddData2SQL(object):
             insert app01_student (id,tb_username, name, state, school_id)
             VALUES ({},'{}','{}',0,{})
             '''.format(self.stu_id,tb_username,name,school_id)
-             
             self.cursor.execute(sql)
             self.db.commit()
             return self.stu_id
@@ -139,7 +145,7 @@ class AddData2SQL(object):
         sql = '''
         insert app01_studentshop (id, order_time, shop_id, student_id, money, order_number) VALUES
         ({},'{}',{},{},{},'{}')
-        '''.format(self.ss_id,used_time,self.shop_id,stu_id,money,order_num)
+        '''.format(self.ss_id,used_time,self.shoping_id,stu_id,money,order_num)
          
         self.cursor.execute(sql)
         self.db.commit()
@@ -160,7 +166,11 @@ class AddData2SQL(object):
             if df_name == '黑名单' or df_name == '注意事项截图':
                 continue
             try:
-                self._insert_shop(df_name)
+                try:
+                    shop_id = int(df_name[:3])
+                except ValueError:
+                    shop_id = -1
+                self._insert_shop(df_name,shop_id)
             except Exception as e:
                 print(e)
             shop_list = df_dict[df_name].dropna().values.tolist()
