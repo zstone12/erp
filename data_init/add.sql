@@ -24,6 +24,8 @@ begin
 
 end;
 
+
+
 drop procedure if exists delete_all_stu_info ;
 
 
@@ -150,3 +152,23 @@ select distinct tb_username,name,a01s.school_name,(select count(distinct shop_id
             join app01_shop shop on ss.shop_id = shop.id
             join app01_school a01s on stu.school_id = a01s.id
             where shop.shop_name != 'abc' and school_id in (1,2,3) group by tb_username, name, school_name having count_ > 1 order by count_ asc limit 500;
+
+call delete_all_stu_info();
+
+select  count(*), shop_id from erpData.app01_studentshop group by shop_id;
+
+select tb_username,name,a01s.school_name,stu.state,count(distinct shop_id) as count_ from app01_studentshop ss
+                      join app01_student stu on ss.student_id = stu.id
+                      join app01_shop shop on ss.shop_id = shop.id
+                      join app01_school a01s on stu.school_id = a01s.id
+                      where shop.shop_name != '路特斯所有' and school_id in (1,2,3) and stu.state=0 group by tb_username, name, school_name having count_ > 1 order by count_ asc limit 500;
+
+
+create index ss on app01_studentshop(shop_id,student_id);
+create index shop1 on erpDB.app01_shop(id);
+create index stu1 on erpDB.app01_shop(id,shop_name);
+select count(*) from app01_studentshop;
+
+drop index ss1 on app01_studentshop;
+
+update app01_student set app01_student.remark='' where 1;
