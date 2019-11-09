@@ -16,7 +16,7 @@ Including another URLconf
 
 from django.conf.urls import url
 from django.contrib import admin
-from django.urls import include
+from django.urls import include, re_path
 
 from login import views
 
@@ -34,4 +34,7 @@ urlpatterns = [
     url(r'^shop_merge',views.shop_merge),
     url(r'^recommended_students',views.recommended_students),
     url(r'^block_student',views.block_student),
+    url(r'^download/(.*)', views.download, name='download_file'),
+    url(r'^editremark',views.editremark),
+
 ]

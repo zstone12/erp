@@ -1,7 +1,7 @@
 # login/views.py
 import os
 import time
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse, StreamingHttpResponse
 from django.shortcuts import render, redirect
 from .models import User
 from .forms import UserForm
@@ -29,6 +29,7 @@ def index(request):
         username = request.session['user_name']
         schools = models.School.objects.filter(user__name=username)
         shop_list = models.Shop.objects.all()
+
 
         return render(request, 'login/index.html', locals())
 
@@ -222,7 +223,7 @@ def upload(request):
         if not os.path.exists('./data'):
             os.makedirs('./data')
 
-        path = os.path.join("./data", str(time.time())+myFile.name)
+        path = os.path.join("./data", str(time.time()) + myFile.name)
         destination = open(path, 'wb+')  # 打开特定的文件进行二进制的写操作
         for chunk in myFile.chunks():  # 分块写入文件
             destination.write(chunk)
@@ -242,7 +243,7 @@ def upload(request):
             '''.format(file_md5))
             db.commit()
         try:
-            threading.Thread(target=data_add,args=(path,)).start()
+            threading.Thread(target=data_add, args=(path,)).start()
             return HttpResponse(json.dumps(res))
         except:
             res = {'wrong': 'wrong'}
@@ -269,10 +270,19 @@ def recommended_students(requests):
     con, cursor = get_sql_conn()
     shop_name = requests.POST.get("shopname").strip()
     print(shop_name)
-    try:
-        models.Shop.objects.filter(shop_name=shop_name)
-    except Exception as e:
-        return HttpResponse(json.dumps(res, ensure_ascii=False))
+
+    #这一步是为了判断有没有这个店铺
+    if shop_name.isdigit():
+        try:
+            models.Shop.objects.filter(id=shop_name)
+        except Exception as e:
+            return HttpResponse(json.dumps(res, ensure_ascii=False))
+    else:
+        try:
+            models.Shop.objects.filter(shop_name=shop_name)
+        except Exception as e:
+            return HttpResponse(json.dumps(res, ensure_ascii=False))
+
 
     user_name = requests.session['user_name']
     schools = models.School.objects.filter(user__name=user_name)
@@ -280,17 +290,25 @@ def recommended_students(requests):
     for i in schools:
         str1 += str(i.id) + ','
     str1 = str1[:-1]
-    sql3 = '''
-    select distinct tb_username,name,a01s.school_name,(select count(distinct shop_id)) as count_ from app01_studentshop ss
-            join app01_student stu on ss.student_id = stu.id
-            join app01_shop shop on ss.shop_id = shop.id
-            join app01_school a01s on stu.school_id = a01s.id
-            where shop.shop_name != '{}' and school_id in ({}) group by tb_username, name, school_name having count_ > 1 order by count_ asc limit 500;
-    '''.format(shop_name, str1)
+    if shop_name.isdigit():
+        sql3 = '''
+                    select distinct any_value(stu.remark) as remark,tb_username,name,a01s.school_name,(select count(distinct shop_id)) as count_ from app01_studentshop ss
+                        join app01_student stu on ss.student_id = stu.id
+                        join app01_shop shop on ss.shop_id = shop.id
+                        join app01_school a01s on stu.school_id = a01s.id
+                        where shop.id != {} and school_id in ({}) and stu.state=0 group by tb_username, name, school_name having count_ > 1 order by count_ asc limit 500;
+                '''.format(shop_name, str1)
+    else:
+        sql3 = '''
+            select distinct tb_username,name,any_value(stu.remark) as remark,a01s.school_name,(select count(distinct shop_id)) as count_ from app01_studentshop ss
+                    join app01_student stu on ss.student_id = stu.id
+                    join app01_shop shop on ss.shop_id = shop.id
+                    join app01_school a01s on stu.school_id = a01s.id
+                    where shop.shop_name != '{}' and school_id in ({}) and stu.state=0 group by tb_username, name, school_name having count_ > 1 order by count_ asc limit 500;
+            '''.format(shop_name, str1)
     res = get_dict_data_sql(cursor, sql3)
 
     return HttpResponse(json.dumps(res, ensure_ascii=False))
-
 
 def block_student(request):
     ret = {'status': True}
@@ -303,3 +321,30 @@ def block_student(request):
         print("shit")
         print(e)
     return HttpResponse(json.dumps(ret))
+
+
+def download(request, data):  # 通过反向解析获取data文件名
+    file_path = os.path.join(os.getcwd(), data)  # 拼接文件在服务端的真实路径
+    ret = {'status': False}
+
+
+    # 下载文件（固定格式）
+    ext = os.path.basename(file_path).split('.')[-1].lower()
+    # 不让客户下载的文件路径
+    if ext not in ['py', 'db', 'sqlite3']:
+        response = FileResponse(open(file_path, 'rb'))
+        response['content_type'] = "application/octet-stream"
+        response['Content-Disposition'] = 'attachment; filename=' + 'dow_name'  # 下载的文件名
+        return response  # 返回文件流
+    else:
+        return HttpResponse(ret)
+
+
+def editremark(request):
+    ret = {'status': False}
+
+    remark = request.POST.get("remark");
+    tb_name = request.POST.get("tb_name");
+
+    models.Student.objects.filter(tb_username=tb_name).update(remark=remark)
+    return HttpResponse(ret)

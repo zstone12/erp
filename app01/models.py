@@ -16,6 +16,7 @@ class Student(models.Model):
     name = models.CharField(max_length=50)
     school = models.ForeignKey("School", on_delete=models.CASCADE, )
     state = models.BooleanField(default=False)
+    remark = models.CharField(max_length=100,default='无')
 
 
 
