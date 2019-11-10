@@ -30,7 +30,6 @@ def index(request):
         schools = models.School.objects.filter(user__name=username)
         shop_list = models.Shop.objects.all()
 
-
         return render(request, 'login/index.html', locals())
 
     shop_list = models.Shop.objects.all()
@@ -123,8 +122,6 @@ def ajaxsearch(request):
     con, cursor = get_sql_conn()
     sql = "select max(ss.order_time) as last_time ,stu.name,stu.tb_username,shop_name,school_name from app01_studentshop ss join app01_shop shop on ss.shop_id = shop.id join app01_student stu on ss.student_id = stu.id join app01_school sch on stu.school_id = sch.id where stu.name = '{}' and shop.cooperate_state = 1 group by ss.student_id, ss.shop_id order by  stu.tb_username;".format(
         user_name)
-
-    # sql1 = "select shop_name from app01_shop where id not in (select distinct ss.shop_id from app01_studentshop ss join app01_shop shop on ss.shop_id = shop.id join app01_student stu on ss.student_id = stu.id where stu.tb_username = 'tb971437173')  and cooperate_state = 1;"
     res = get_dict_data_sql(cursor, sql)
     return HttpResponse(json.dumps(res, cls=DateEncoder, ensure_ascii=False))  # jq那边在 用js的反序列方法转换即可
 
@@ -271,7 +268,7 @@ def recommended_students(requests):
     shop_name = requests.POST.get("shopname").strip()
     print(shop_name)
 
-    #这一步是为了判断有没有这个店铺
+    # 这一步是为了判断有没有这个店铺
     if shop_name.isdigit():
         try:
             models.Shop.objects.filter(id=shop_name)
@@ -282,7 +279,6 @@ def recommended_students(requests):
             models.Shop.objects.filter(shop_name=shop_name)
         except Exception as e:
             return HttpResponse(json.dumps(res, ensure_ascii=False))
-
 
     user_name = requests.session['user_name']
     schools = models.School.objects.filter(user__name=user_name)
@@ -310,6 +306,7 @@ def recommended_students(requests):
 
     return HttpResponse(json.dumps(res, ensure_ascii=False))
 
+
 def block_student(request):
     ret = {'status': True}
     try:
@@ -326,7 +323,6 @@ def block_student(request):
 def download(request, data):  # 通过反向解析获取data文件名
     file_path = os.path.join(os.getcwd(), data)  # 拼接文件在服务端的真实路径
     ret = {'status': False}
-
 
     # 下载文件（固定格式）
     ext = os.path.basename(file_path).split('.')[-1].lower()
@@ -348,3 +344,22 @@ def editremark(request):
 
     models.Student.objects.filter(tb_username=tb_name).update(remark=remark)
     return HttpResponse(ret)
+
+
+def remarkdata(request):
+    user_name = request.POST.get("username").strip()
+    user = models.Student.objects.filter(name=user_name).first()
+
+    res = {'remark': user.remark}
+
+    return HttpResponse(json.dumps(res, ensure_ascii=False))
+
+
+def changeremark(request):
+    user_name = request.POST.get("username").strip()
+    user = models.Student.objects.filter(name=user_name)
+    res = {'status': False}
+
+    new_remark = request.POST.get("remark").strip()
+    user.update(remark=new_remark)
+    return HttpResponse(json.dumps(res, ensure_ascii=False))

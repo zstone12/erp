@@ -12,11 +12,11 @@ Class-based views
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""# mysite_login/urls.py
+"""
 
 from django.conf.urls import url
 from django.contrib import admin
-from django.urls import include, re_path
+from django.urls import include
 
 from login import views
 
@@ -36,5 +36,7 @@ urlpatterns = [
     url(r'^block_student',views.block_student),
     url(r'^download/(.*)', views.download, name='download_file'),
     url(r'^editremark',views.editremark),
+    url(r'^remarkdata',views.remarkdata),
+    url(r'^changeremark',views.changeremark),
 
 ]

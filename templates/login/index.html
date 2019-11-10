@@ -21,23 +21,22 @@
         <div id="container">
             <section class="tab">
                 <div>
-                    <form id="login_value" class="orm-inline" style="width:100%;">
-                        <div>
-                            <div class="form-group">
-                                <label for="username">姓名：</label>
-                                <input id="username" type="text" name="username" placeholder="请输入学生姓名">
+                    <div>
+                        <div id="remark_div" style="float:right;"></div>
+                        <form id="login_value" class="orm-inline" style="width:100%;">
+                            <div>
+                                <div class="form-group">
+                                    <label for="username">姓名：</label>
+                                    <input id="username" type="text" name="username" placeholder="请输入学生姓名">
+                                </div>
+                                <input type="button" value="搜索学生刷单情况" onclick="search()" class="btn btn-success">
                             </div>
-                            <input type="button" value="搜索学生刷单情况" onclick="search()" class="btn btn-success">
-                            {#                            <input type="button" value="搜索学生未刷过店铺" onclick="search_two()" class="btn btn-primary">#}
-
-                        </div>
-                    </form>
-                    <div style="width:50%;float:left;">
+                        </form>
+                    </div>
+                    <div style="width:50%;">
                         已刷
                     </div>
-                    <div style="width:50%;float:left;">
-                        未刷
-                    </div>
+
                     <div id="tb_div" style="width:25%;float:left;">
                     </div>
                     <div id="tb_div11" style="width:25%;float:left;">
@@ -47,7 +46,6 @@
                     </div>
                     <div id="tb_div22" style="width:25%;float:left;">
                     </div>
-
                 </div>
             </section>
             <section class="tab">
@@ -59,12 +57,12 @@
                         </div>
                         <br/>
                         <input type="button" value="上传并更新数据" onclick="upload()" class="btn btn-primary">
-                        <input type="button" value="下载当日日志" onclick="download()" class="btn btn-primary">
+{#                        <input type="button" value="下载当日日志" onclick="download()" class="btn btn-primary">#}
+                        <a href="http://129.204.185.247:8080/index">日志下载</a>
                         <div id="download"></div>
                     </form>
                 </div>
             </section>
-
             <section class="tab">
                 {#                <div style="text-align:center"><input type="button" value="进行合并" onclick="merge() "#}
                 {#                                                      class="btn btn-primary"></div>#}
@@ -93,7 +91,6 @@
                 </table>
 
             </section>
-
             <section class="tab">
                 <form id="shop_value" class="orm-inline">
                     <div style="float:left;text-align:center">
@@ -126,14 +123,10 @@
                 </div>
             </section>
         </div>
-
-
         <script src="../../static/JS/jquery.js"></script>
         <script src="../../static/JS/jquery.form.js"></script>
         <script>
             window.onload = function () {
-
-
                 var nav = document.getElementById('nav');
                 var oNav = nav.getElementsByTagName('li');
 
@@ -161,8 +154,6 @@
 
 
         </script>
-
-
         <script>
             function cancel() {
                 $('#delModal').modal('hide');
@@ -170,7 +161,6 @@
 
             function bindDelConfirm() {
                 {
-                    console.log("shit");
 
                     var tb_username = $('#delNid').val();
 
@@ -189,15 +179,13 @@
                 }
             }
         </script>
-
         <script>
-
             function editremark(name) {
-                var s= "#"+name;
+                var s = "#" + name;
                 var tr = $(s).children()[4];
-                var input =  tr.children[0];
+                var input = tr.children[0];
                 var data = input.value;
-                var s={'remark':data,'tb_name':name};
+                var s = {'remark': data, 'tb_name': name};
                 $.ajax({
                     url: "/editremark/", //请求地址
                     type: "POST",       //请求类型
@@ -209,9 +197,6 @@
                     }
 
                 })
-                alert(data);
-
-
 
             }
 
@@ -220,7 +205,6 @@
                     $(".del-row").on('click', function (e) {
                         $('#delModal').modal('show');
                         var tb = $(this).parent().parent().attr('name');
-                        console.log(tb);
                         $('#delNid').val(tb);
                     })
 
@@ -228,8 +212,6 @@
             }
         </script>
         <script>
-
-
             function search() {  //获取到按钮的点击事件
                 $.ajax({
                     url: "/ajaxsearch/", //请求地址
@@ -244,9 +226,6 @@
                         var data2 = data1.slice(0, data1.length / 2)
                         var data3 = data1.slice(data1.length / 2)
 
-
-                        {#console.log(data2);#}
-                        {#console.log(data3);#}
 
                         var s = document.createElement("table");
                         s.setAttribute("class", "table table-bordered table-striped");
@@ -330,11 +309,11 @@
 
                         })
                         s.append(tbod)
-                            $('#tb_div11').empty();
-                            $('#tb_div11').append(s);
+                        $('#tb_div11').empty();
+                        $('#tb_div11').append(s);
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        alert("查询错误");
+                        alert("查询错误或当前用户尚未添加管理学校.");
                     }
                 })
                 $.ajax({
@@ -347,9 +326,6 @@
 
                         var data2 = data1.slice(0, data1.length / 2)
                         var data3 = data1.slice(data1.length / 2)
-
-                        console.log(data2);
-                        console.log(data3);
 
                         var s = '<table class="table table-bordered table-striped"> <thead align="center"> <tr>' +
                             ' <th >未刷过店铺名</th> <th>淘宝用户名</th>' + '</tr>' + '</thead> <tbody>';
@@ -375,76 +351,52 @@
                         s += '</tbody>\n' +
                             '</table>';
 
-                        //console.log(s);
                         $('#tb_div22').empty();
                         $('#tb_div22').append(s);
 
 
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        alert("查询错误");
+                        alert("查询错误.");
                     }
                 })
-            }
-        </script>
-
-
-        {#搜索未刷单情况#}
-        <script>
-            function search_two() {  //获取到按钮的点击事件
                 $.ajax({
-                    url: "/ajaxsearchtwo/", //请求地址
+                    url: "/remarkdata/", //请求地址
                     type: "POST",       //请求类型
                     data: $('#login_value').serialize(),
-
                     success: function (data) {
-                        var data1 = JSON.parse(data);
-
-                        var data2 = data1.slice(0, data1.length / 2)
-                        var data3 = data1.slice(data1.length / 2)
-
-                        console.log(data2);
-                        console.log(data3);
-
-                        var s = '<table class="table table-bordered table-striped"> <thead align="center"> <tr>' +
-                            '<th>学生姓名</th> <th>未刷过店铺名</th> <th>淘宝用户名</th> <th>学校</th>' +
-                            '</tr>' + '</thead> <tbody>';
-                        $.each(data2, function (index, obj) {
-                            s += '<tr>' + '<th>' + obj.total_name + '</th>' + '<th>' + obj.shop_name + '</th>' +
-                                '<th>' + obj.tb_username + '</th>' +
-                                '<th>' + obj.school_name + '</th>' + '<tr>'
-
-                        })
-                        s += '</tbody>\n' +
-                            '</table>';
-                        $('#tb_div2').empty();
-                        $('#tb_div2').append(s);
-
-                        var s = '<table class="table table-bordered table-striped"> <thead align="center"> <tr>' +
-                            '<th>学生姓名</th> <th>未刷过店铺名</th> <th>淘宝用户名</th> <th>学校</th>' +
-                            '</tr>' + '</thead> <tbody>';
-                        $.each(data3, function (index, obj) {
-                            s += '<tr>' + '<th>' + obj.total_name + '</th>' + '<th>' + obj.shop_name + '</th>' +
-                                '<th>' + obj.tb_username + '</th>' +
-                                '<th>' + obj.school_name + '</th>' + '<tr>'
-
-                        })
-                        s += '</tbody>\n' +
-                            '</table>';
-
-                        //console.log(s);
-                        $('#tb_div22').empty();
-                        $('#tb_div22').append(s);
-
-
+                        var jsonData = JSON.parse(data);
+                        var s = `<form id=remark_data>
+                                    <input id="new_remark" name="new_remark" value =${jsonData.remark} style="width:400px;height:100px" onblur="changeremark()"/>
+                                 </form>`
+                        $('#remark_div').empty();
+                        $('#remark_div').append(s);
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        alert("查询错误");
+                        alert("查询错误或当前用户尚未添加管理学校.");
                     }
                 })
             }
         </script>
+        <script>
+            function changeremark(){
+                var name =document.forms[1].username.value;
+                var new_remark =document.forms[0].new_remark.value;
 
+                $.ajax({
+                    url: "/changeremark/", //请求地址
+                    type: "POST",       //请求类型
+                    data: {'username':name,'remark':new_remark},
+
+                    success: function (data) {
+                        //
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("修改备注错误");
+                    }
+                    })
+            }
+        </script>
         <script>
             function download() {
                 var down1 = document.createElement("a");
@@ -478,7 +430,6 @@
                 })
             }
         </script>
-
         <script>
             function merge() {  //获取到按钮的点击事件
                 $.ajax({
@@ -495,7 +446,6 @@
                 })
             }
         </script>
-
         <script>
             var aj;
 
@@ -546,7 +496,7 @@
                         $.each(data1, function (index, obj) {
                             var tr = document.createElement('tr');
                             tr.setAttribute("name", obj.tb_username);
-                            tr.setAttribute("id",obj.tb_username);
+                            tr.setAttribute("id", obj.tb_username);
                             var tb_th = document.createElement('th');
                             tb_th.innerHTML = obj.tb_username;
                             tr.append(tb_th);
@@ -571,12 +521,11 @@
                             remark_input.setAttribute("class", "edit-row");
 
 
-                            var s2 ="editremark(\""+ obj.tb_username+"\")";
+                            var s2 = "editremark(\"" + obj.tb_username + "\")";
                             remark_input.setAttribute("onblur", s2);
 
                             remark_th.append(remark_input);
                             tr.append(remark_th);
-
 
 
                             var op_th = document.createElement('th');
@@ -591,21 +540,15 @@
 
                         })
                         s.append(tbod);
-                            $('#tb_div3').empty();
-                            $('#tb_div3').append(s);
+                        $('#tb_div3').empty();
+                        $('#tb_div3').append(s);
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        alert("查询错误");
+                        alert("查询错误或当前用户尚未添加管理学校.");
                     }
                 })
             }
 
-        </script>
-
-        <script>
-            $("#abc").on('click', function (e) {
-                console.log(e);
-            })
         </script>
     {% else %}
         <h1> 你尚未登录，只能访问公开内容！</h1>
