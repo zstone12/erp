@@ -306,6 +306,7 @@ def recommended_students(requests):
                     join app01_school a01s on stu.school_id = a01s.id
                     where shop.shop_name != '{}' and school_id in ({}) and stu.state=0 group by tb_username, name, school_name having count_ > 1 order by count_ asc limit 500;
             '''.format(shop_name, str1)
+    print(sql3)
     res = get_dict_data_sql(cursor, sql3)
 
     return HttpResponse(json.dumps(res, ensure_ascii=False))
