@@ -178,3 +178,11 @@ select distinct tb_username,name,any_value(stu.remark) as remark,a01s.school_nam
                     join app01_shop shop on ss.shop_id = shop.id
                     join app01_school a01s on stu.school_id = a01s.id
                     where school_id in (2,3,4) and stu.state=0 and student_id not in(select distinct student_id from erpDB.app01_studentshop where shop_name ='116-电动车') group by tb_username, name, school_name having count_ > 1 order by count_,time_ asc limit 50;
+
+
+show create table update_file_md5;
+
+CREATE TABLE `update_file_md5` (
+  `md5` varchar(300) NOT NULL,
+  PRIMARY KEY (`md5`)
+);
