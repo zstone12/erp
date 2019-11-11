@@ -262,6 +262,12 @@ def shop_merge(requests):
 
 
 def recommended_students(requests):
+    class DateEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, datetime.datetime):
+                return obj.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                return json.JSONEncoder.default(self, obj)
     res = {'msg': 'ok'}
     #    res = get_dict_data_sql(cursor, sql2) 将sql语句执行结果转化为字典
     con, cursor = get_sql_conn()
@@ -296,16 +302,17 @@ def recommended_students(requests):
                 '''.format(shop_name, str1)
     else:
         sql3 = '''
-            select distinct tb_username,name,any_value(stu.remark) as remark,a01s.school_name,(select count(distinct shop_id)) as count_ from app01_studentshop ss
+            select distinct tb_username,name,any_value(stu.remark) as remark,a01s.school_name,count(distinct shop_id) as count_ from app01_studentshop ss
                     join app01_student stu on ss.student_id = stu.id
                     join app01_shop shop on ss.shop_id = shop.id
                     join app01_school a01s on stu.school_id = a01s.id
-                    where shop.shop_name != '{}' and school_id in ({}) and stu.state=0 group by tb_username, name, school_name having count_ > 1 order by count_ asc limit 500;
-            '''.format(shop_name, str1)
+                    where school_id in ({}) and stu.state=0 and student_id not in(select distinct student_id from erpDB.app01_studentshop where shop_name ='{}') group by tb_username, name, school_name having count_ > 1 order by count_ asc limit 50;
+
+            '''.format(str1,shop_name)
     print(sql3)
     res = get_dict_data_sql(cursor, sql3)
-
-    return HttpResponse(json.dumps(res, ensure_ascii=False))
+    print(res)
+    return HttpResponse(json.dumps(res,cls=DateEncoder, ensure_ascii=False))
 
 
 def block_student(request):

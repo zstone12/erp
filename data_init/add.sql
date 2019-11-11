@@ -172,3 +172,9 @@ select count(*) from app01_studentshop;
 drop index ss1 on app01_studentshop;
 
 update app01_student set app01_student.remark='' where 1;
+
+select distinct tb_username,name,any_value(stu.remark) as remark,a01s.school_name,count(distinct shop_id) as count_, max(ss.order_time) as time_ from app01_studentshop ss
+                    join app01_student stu on ss.student_id = stu.id
+                    join app01_shop shop on ss.shop_id = shop.id
+                    join app01_school a01s on stu.school_id = a01s.id
+                    where school_id in (2,3,4) and stu.state=0 and student_id not in(select distinct student_id from erpDB.app01_studentshop where shop_name ='116-电动车') group by tb_username, name, school_name having count_ > 1 order by count_,time_ asc limit 50;
