@@ -84,7 +84,7 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 选择mysql引擎
-        'NAME': 'erpDB',
+        'NAME': 'erpData',
         'USER': 'root',
         'PASSWORD': 'erp2019/10/02',
         'HOST': '129.204.185.247',
