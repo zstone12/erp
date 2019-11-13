@@ -237,6 +237,10 @@
                         th2.innerHTML = "淘宝用户名";
                         th1.append(th2);
 
+                        var th3 = document.createElement("th");
+                        th3.innerHTML = "学校";
+                        th1.append(th3);
+
                         var th4 = document.createElement("th");
                         th4.innerHTML = "店铺名";
                         th1.append(th4);
@@ -255,6 +259,10 @@
                             var tb_th = document.createElement('th');
                             tb_th.innerHTML = obj.tb_username;
                             tr.append(tb_th);
+
+                            var sch_th = document.createElement('th');
+                            sch_th.innerHTML = obj.school_name;
+                            tr.append(sch_th);
 
                             var shop_th = document.createElement('th');
                             shop_th.innerHTML = obj.shop_name;
@@ -279,6 +287,10 @@
                         th2.innerHTML = "淘宝用户名";
                         th1.append(th2);
 
+                        var th3 = document.createElement("th");
+                        th3.innerHTML = "学校";
+                        th1.append(th3);
+
                         var th4 = document.createElement("th");
                         th4.innerHTML = "店铺名";
                         th1.append(th4);
@@ -297,6 +309,10 @@
                             var tb_th = document.createElement('th');
                             tb_th.innerHTML = obj.tb_username;
                             tr.append(tb_th);
+
+                            var sch_th = document.createElement('th');
+                            sch_th.innerHTML = obj.school_name;
+                            tr.append(sch_th);
 
                             var shop_th = document.createElement('th');
                             shop_th.innerHTML = obj.shop_name;
@@ -328,9 +344,10 @@
                         var data3 = data1.slice(data1.length / 2)
 
                         var s = '<table class="table table-bordered table-striped"> <thead align="center"> <tr>' +
-                            ' <th >未刷过店铺名</th> <th>淘宝用户名</th>' + '</tr>' + '</thead> <tbody>';
+                            ' <th >未刷过店铺名</th> <th>淘宝用户名</th>  <th>学校</th>' + '</tr>' + '</thead> <tbody>';
                         $.each(data2, function (index, obj) {
                             s += '<tr>' + '<th>' + obj.shop_name + '</th>' +
+                                    '<th>' + obj.school_name + '</th>'+
                                 '<th>' + obj.tb_username + '</th>' + '<tr>'
 
                         })
@@ -340,10 +357,11 @@
                         $('#tb_div2').append(s);
 
                         var s = '<table class="table table-bordered table-striped"> <thead align="center"> <tr>' +
-                            ' <th>未刷过店铺名</th> <th>淘宝用户名</th>' +
+                            ' <th>未刷过店铺名</th> <th>淘宝用户名</th> <th>学校</th>' +
                             '</tr>' + '</thead> <tbody>';
                         $.each(data3, function (index, obj) {
                             s += '<tr>' + '<th>' + obj.shop_name + '</th>' +
+                                    '<th>' + obj.school_name + '</th>'+
                                 '<th>' + obj.tb_username + '</th>' +
                                 '<tr>'
 
