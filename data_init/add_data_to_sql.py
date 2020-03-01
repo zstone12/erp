@@ -27,7 +27,6 @@ class AddData2SQL(object):
         connect to database and return cursor and db to commit data
         :return:
         '''
-        db = pymysql.connect("129.204.185.247", "root", "erp2019/10/02", "erpData")
         cursor = db.cursor()
         return cursor,db
 
