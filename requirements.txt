@@ -33,7 +33,7 @@ Flask==1.0.2
 future==0.16.0
 gifmaze==0.3.0
 html5lib==1.0.1
-httpie==1.0.2
+httpie==1.0.3
 httplib2==0.12.1
 idna==2.6
 ipykernel==4.8.2
