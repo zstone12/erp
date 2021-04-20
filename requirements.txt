@@ -2,7 +2,7 @@ aliyun-python-sdk-core==2.13.5
 aliyun-python-sdk-core-v3==2.13.3
 aliyun-python-sdk-kms==2.7.1
 altgraph==0.16.1
-ansible==2.7.8
+ansible==2.9.20
 appdirs==1.4.3
 appnope==0.1.0
 appscript==1.0.1
